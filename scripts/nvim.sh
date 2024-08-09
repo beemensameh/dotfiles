@@ -10,7 +10,7 @@ source $COLORS_FILE
 source $SYMBOLS_FILE
 
 config() {
-    if ! (find -L $HOME/.config/nvim -name init.lua | grep . > /dev/null); then
+    if ! (find $HOME/.config -maxdepth 1 -name nvim | grep . > /dev/null); then
         echo -e "${WARNGING_COLOR}${TRIANGEL}${RESET} Add nvim configution"
         ln -s $PWD/$DIR/../home/.config/nvim $HOME/.config/nvim
     fi
@@ -28,7 +28,6 @@ if ! (nvim -v > /dev/null) ; then
 fi
 echo -e "${SUCCESS_COLOR}${CHECK_MARK}${RESET} Nvim installed"
 
-echo -e "${WARNGING_COLOR}${TRIANGEL}${RESET} Install some packages required"
 if !(rg -V > /dev/null); then
     echo -e "${WARNGING_COLOR}${TRIANGEL}${RESET} Install ripgrep"
     sudo apt-get install ripgrep
