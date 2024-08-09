@@ -1,13 +1,24 @@
-#!/bin/sh
+#!/bin/bash
+# Install nvim editor
+# If you pass --config for this script, it will move the nvim dir config to the home .config dir
+
+DIR=$(dirname "$0")
+COLORS_FILE="${DIR}/_colors.sh"
+SYMBOLS_FILE="${DIR}/_symbols.sh"
+
+source $COLORS_FILE
+source $SYMBOLS_FILE
 
 config() {
-    echo '\033[34;1m▶\033[0m Add nvim configution'
-    ln -s $PWD/../home/.config/nvim ~/.config/nvim
+    if ! (find -L $HOME/.config/nvim -name init.lua | grep . > /dev/null); then
+        echo -e "${WARNGING_COLOR}${TRIANGEL}${RESET} Add nvim configution"
+        ln -s $PWD/$DIR/../home/.config/nvim $HOME/.config/nvim
+    fi
+    echo -e "${SUCCESS_COLOR}${CHECK_MARK}${RESET} Nvim configured"
 }
 
-echo '\033[34;1m▶\033[0m Check nvim'
 if ! (nvim -v > /dev/null) ; then
-    echo '\033[33;1m▶\033[0m Install nvim'
+    echo -e "${WARNGING_COLOR}${TRIANGEL}${RESET} Install nvim"
     curl -LO https://github.com/neovim/neovim/releases/latest/download/nvim-linux64.tar.gz
     sudo rm -rf /opt/nvim /opt/nvim-linux64
     sudo tar -C /opt -xzf nvim-linux64.tar.gz
@@ -15,7 +26,14 @@ if ! (nvim -v > /dev/null) ; then
     sudo ln -s /opt/nvim-linux64/bin/nvim /usr/bin/nvim
     rm nvim-linux64.tar.gz
 fi
-echo '\033[32;1m▶\033[0m Nvim installed'
+echo -e "${SUCCESS_COLOR}${CHECK_MARK}${RESET} Nvim installed"
+
+echo -e "${WARNGING_COLOR}${TRIANGEL}${RESET} Install some packages required"
+if !(rg -V > /dev/null); then
+    echo -e "${WARNGING_COLOR}${TRIANGEL}${RESET} Install ripgrep"
+    sudo apt-get install ripgrep
+fi
+echo -e "${SUCCESS_COLOR}${CHECK_MARK}${RESET} ripgrep installed"
 
 while :; do
     case $1 in
