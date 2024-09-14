@@ -28,11 +28,19 @@ if ! (nvim -v > /dev/null) ; then
 fi
 echo -e "${SUCCESS_COLOR}${CHECK_MARK}${RESET} Nvim installed"
 
+# For enable recursive search in dirs
 if !(rg -V > /dev/null); then
     echo -e "${WARNGING_COLOR}${TRIANGEL}${RESET} Install ripgrep"
-    sudo apt-get install ripgrep
+    sudo apt-get install ripgrep -y
 fi
 echo -e "${SUCCESS_COLOR}${CHECK_MARK}${RESET} ripgrep installed"
+
+# For enable clipboard
+if !(xclip -version > /dev/null); then
+    echo -e "${WARNGING_COLOR}${TRIANGEL}${RESET} Install xclip"
+    sudo apt-get install xclip -y
+fi
+echo -e "${SUCCESS_COLOR}${CHECK_MARK}${RESET} xclip installed"
 
 while :; do
     case $1 in
