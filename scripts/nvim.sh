@@ -17,14 +17,33 @@ config() {
     echo -e "${SUCCESS_COLOR}${CHECK_MARK}${RESET} Nvim configured"
 }
 
-if ! (nvim -v > /dev/null) ; then
-    echo -e "${WARNGING_COLOR}${TRIANGEL}${RESET} Install nvim"
-    curl -LO https://github.com/neovim/neovim/releases/latest/download/nvim-linux64.tar.gz
+install() {
+    if ($1 == true); then
+        echo -e "${WARNGING_COLOR}${TRIANGEL}${RESET} Install nvim"
+    else
+        echo -e "${WARNGING_COLOR}${TRIANGEL}${RESET} Update nvim"
+    fi
+    curl -LO https://github.com/neovim/neovim/releases/download/stable/nvim-linux-x86_64.tar.gz
     sudo rm -rf /opt/nvim /opt/nvim-linux64
-    sudo tar -C /opt -xzf nvim-linux64.tar.gz
+    sudo tar -C /opt -xzf nvim-linux-x86_64.tar.gz
     sudo rm /usr/bin/nvim
-    sudo ln -s /opt/nvim-linux64/bin/nvim /usr/bin/nvim
-    rm nvim-linux64.tar.gz
+    sudo ln -s /opt/nvim-linux-x86_64/bin/nvim /usr/bin/nvim
+    rm nvim-linux-x86_64.tar.gz
+}
+
+case $1 in
+    -c|--config)
+        config
+        ;;
+    -u|--update)
+        install false
+        ;;
+    *)               # Default case: No more options, so break out of the loop.
+        break
+esac
+
+if ! (nvim -v > /dev/null) ; then
+    install true
 fi
 echo -e "${SUCCESS_COLOR}${CHECK_MARK}${RESET} Nvim installed"
 
@@ -42,15 +61,3 @@ if !(xclip -version > /dev/null); then
 fi
 echo -e "${SUCCESS_COLOR}${CHECK_MARK}${RESET} xclip installed"
 
-while :; do
-    case $1 in
-        -c|--config)
-            config
-            exit
-            ;;
-        *)               # Default case: No more options, so break out of the loop.
-            break
-    esac
-
-    shift
-done
