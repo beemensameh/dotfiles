@@ -3,4 +3,4 @@
 
 ./scripts/setup_git_prompt.sh
 ./scripts/install_nvim.sh
-./scripts/home.sh
+./scripts/link_dotfiles.sh
