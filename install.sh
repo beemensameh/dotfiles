@@ -2,5 +2,5 @@
 # Install all dotfiles (Entrypoint)
 
 ./scripts/bashrc.sh
-./scripts/nvim.sh --config
+./scripts/install_nvim.sh
 ./scripts/home.sh
