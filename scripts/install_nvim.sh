@@ -162,24 +162,54 @@ install_nvim() {
     # Backup existing installation if it exists
     if [[ -d "$NVIM_INSTALL_DIR" ]]; then
         log "INFO" "Backing up existing installation..."
-        sudo cp -r "$NVIM_INSTALL_DIR" "${NVIM_INSTALL_DIR}.backup.$(date +%s)" || true
+        if command -v sudo &> /dev/null; then
+            sudo cp -r "$NVIM_INSTALL_DIR" "${NVIM_INSTALL_DIR}.backup.$(date +%s)" || true
+        else
+            cp -r "$NVIM_INSTALL_DIR" "${NVIM_INSTALL_DIR}.backup.$(date +%s)" || true
+        fi
     fi
 
     # Remove old installation
     log "INFO" "Removing old installation..."
-    sudo rm -rf "$NVIM_INSTALL_DIR"
-    [[ -L "$NVIM_BINARY" ]] && sudo rm -f "$NVIM_BINARY"
+    if command -v sudo &> /dev/null; then
+        sudo rm -rf "$NVIM_INSTALL_DIR"
+        [[ -L "$NVIM_BINARY" ]] && sudo rm -f "$NVIM_BINARY"
+    else
+        rm -rf "$NVIM_INSTALL_DIR"
+        [[ -L "$NVIM_BINARY" ]] && rm -f "$NVIM_BINARY"
+    fi
 
     # Extract new version
     log "INFO" "Extracting Neovim..."
-    if ! sudo tar -C /opt -xzf nvim-linux-x86_64.tar.gz; then
-        error_exit "Failed to extract Neovim"
+    if command -v sudo &> /dev/null; then
+        if ! sudo tar -C /opt -xzf nvim-linux-x86_64.tar.gz; then
+            error_exit "Failed to extract Neovim"
+        fi
+    else
+        if ! tar -C /opt -xzf nvim-linux-x86_64.tar.gz; then
+            error_exit "Failed to extract Neovim"
+        fi
     fi
 
     # Create symlink
     log "INFO" "Creating symlink..."
-    if ! sudo ln -sf "${NVIM_INSTALL_DIR}/bin/nvim" "$NVIM_BINARY"; then
-        error_exit "Failed to create symlink"
+    if command -v sudo &> /dev/null; then
+        if ! sudo ln -sf "${NVIM_INSTALL_DIR}/bin/nvim" "$NVIM_BINARY"; then
+            error_exit "Failed to create symlink"
+        fi
+    else
+        if ! ln -sf "${NVIM_INSTALL_DIR}/bin/nvim" "$NVIM_BINARY"; then
+            error_exit "Failed to create symlink"
+        fi
+    fi
+    if command -v sudo &> /dev/null; then
+        if ! sudo ln -sf "${NVIM_INSTALL_DIR}/bin/nvim" "$NVIM_BINARY"; then
+            error_exit "Failed to create symlink"
+        fi
+    else
+        if ! ln -sf "${NVIM_INSTALL_DIR}/bin/nvim" "$NVIM_BINARY"; then
+            error_exit "Failed to create symlink"
+        fi
     fi
 
     # Cleanup
@@ -238,13 +268,15 @@ install_dependencies() {
     # Install ripgrep for recursive search
     if ! command -v rg &> /dev/null; then
         log "INFO" "Installing ripgrep..."
+        
         if command -v apt-get &> /dev/null; then
-            sudo apt-get update -qq
-            sudo apt-get install -y ripgrep
-        elif command -v yum &> /dev/null; then
-            sudo yum install -y ripgrep
-        elif command -v dnf &> /dev/null; then
-            sudo dnf install -y ripgrep
+            if command -v sudo &> /dev/null; then
+                sudo apt-get update -qq
+                sudo apt-get install -y ripgrep
+            else
+                apt-get update -qq
+                apt-get install -y ripgrep
+            fi
         else
             log "WARNING" "Could not install ripgrep: package manager not supported"
         fi
@@ -258,11 +290,11 @@ install_dependencies() {
     if ! command -v xclip &> /dev/null; then
         log "INFO" "Installing xclip..."
         if command -v apt-get &> /dev/null; then
-            sudo apt-get install -y xclip
-        elif command -v yum &> /dev/null; then
-            sudo yum install -y xclip
-        elif command -v dnf &> /dev/null; then
-            sudo dnf install -y xclip
+            if command -v sudo &> /dev/null; then
+                sudo apt-get install -y xclip
+            else
+                apt-get install -y xclip
+            fi
         else
             log "WARNING" "Could not install xclip: package manager not supported"
         fi
@@ -280,13 +312,21 @@ remove_nvim() {
     # Remove symlink
     if [[ -L "$NVIM_BINARY" ]]; then
         log "INFO" "Removing symlink..."
-        sudo rm -f "$NVIM_BINARY"
+        if command -v sudo &> /dev/null; then
+            sudo rm -f "$NVIM_BINARY"
+        else
+            rm -f "$NVIM_BINARY"
+        fi
     fi
 
     # Remove installation directory
     if [[ -d "$NVIM_INSTALL_DIR" ]]; then
         log "INFO" "Removing installation directory..."
-        sudo rm -rf "$NVIM_INSTALL_DIR"
+        if command -v sudo &> /dev/null; then
+            sudo rm -rf "$NVIM_INSTALL_DIR"
+        else
+            rm -rf "$NVIM_INSTALL_DIR"
+        fi
     fi
 
     # Ask about config removal
