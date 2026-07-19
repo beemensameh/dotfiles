@@ -1,8 +1,5 @@
 [user]
 	name = "beemensameh"
 	email = 41084077+beemensameh@users.noreply.github.com
-[alias]
-	commit-gitlab = -c user.name='beemensameh' -c user.email='8049920-beemensameh@users.noreply.gitlab.com' commit
-
 [init]
 	defaultBranch = main
