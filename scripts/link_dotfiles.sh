@@ -35,6 +35,7 @@ TARGET_DIR=""
 declare -a DEFAULT_DOTFILES=(
     ".toprc"
     ".gitconfig"
+    ".tmux.conf"
 )
 
 # colors and symbols - Fixed color variable definitions
